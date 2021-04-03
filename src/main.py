@@ -5,17 +5,17 @@ import requests
 import smtplib
 
 
-class Accouont:
+class Account:
     def __init__(self, accoundId):
-        self.accoundId = accoundId
+        self.account_id = accoundId
         self.hnumreward24 = None
         self.hreward24 = None
         self.workers = None
         self.worker_keys = None
         self.miner = None
-        self.fetchStats()
+        self.fetch_stats()
 
-    def showMinerStatus(self):
+    def show_miner_status(self):
         miner = account.miner
         miner_stats = f"name: {'stoicminer0'}\n" \
                       f"24hnumreward: {self.hnumreward24}\n" \
@@ -26,9 +26,9 @@ class Accouont:
                       f"Average Hash Rate: {miner['hr2']}"
         print(miner_stats)
 
-    def fetchStats(self):
-        baseUrl = "https://rvn.2miners.com/api/accounts/"
-        url = baseUrl + self.accoundId
+    def fetch_stats(self):
+        base_url = "https://rvn.2miners.com/api/accounts/"
+        url = base_url + self.account_id
         response = requests.get(url)
         if response.status_code != 200:
             print("error with response. ")
@@ -40,7 +40,8 @@ class Accouont:
             self.worker_keys = self.workers.keys()
             self.miner = self.workers['stoicminer0']
 
-def sendEmail():
+
+def send_email():
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -48,7 +49,8 @@ def sendEmail():
     except:
         print('error with email. ')
 
+
 if __name__ == '__main__':
     accountId = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
-    account = Accouont(accoundId=accountId)
-    account.showMinerStatus()
+    account = Account(accoundId=accountId)
+    account.show_miner_status()
