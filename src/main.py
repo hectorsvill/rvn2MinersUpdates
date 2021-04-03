@@ -6,8 +6,8 @@ import smtplib
 
 
 class Account:
-    def __init__(self, account_id):
-        self.account_id = account_id
+    def __init__(self, address):
+        self.id = address
         self.hnumreward24 = None
         self.hreward24 = None
         self.workers = None
@@ -24,11 +24,11 @@ class Account:
                       f"Last Beat: {miner['lastBeat']}\n" \
                       f"Current Hash Rate: {miner['hr']}\n" \
                       f"Average Hash Rate: {miner['hr2']}"
-        print(miner_stats)
+        return miner_stats
 
     def fetch_stats(self):
         base_url = "https://rvn.2miners.com/api/accounts/"
-        url = base_url + self.account_id
+        url = base_url + self.id
         response = requests.get(url)
         if response.status_code != 200:
             print("error with response. ")
@@ -40,17 +40,32 @@ class Account:
             self.worker_keys = self.workers.keys()
             self.miner = self.workers['stoicminer0']
 
+    def send_email(self, gmail_user, gmail_password, mail_to):
+        subject_text = "Raven 2Miner Update - 1 Online"
+        body_text = self.show_miner_status()
 
-def send_email():
-    try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.ehlo()
-        server.starttls()
-    except:
-        print('error with email. ')
+        email_text = f"""\
+        From: {gmail_user}
+        To: {mail_to}
+        Subject: {subject_text}
+
+        {body_text}
+        """
+
+        try:
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.ehlo()
+            server.login(gmail_user, gmail_password)
+            server.sendmail(gmail_user, mail_to, email_text)
+            server.close()
+        except:
+            print('error with email.')
 
 
 if __name__ == '__main__':
-    account_id = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
-    account = Account(account_id)
-    account.show_miner_status()
+    rvn_address = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
+    account = Account(rvn_address)
+    my_gmail_user = ""
+    my_gmail_password = ""
+    send_mail_to = ""
+    account.send_email(my_gmail_user, my_gmail_password, send_mail_to)
