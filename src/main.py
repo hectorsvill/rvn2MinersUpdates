@@ -13,18 +13,20 @@ class Accouont:
         self.workers = None
         self.worker_keys = None
         self.miner = None
-        self.fetchJsonData()
+        self.fetchStats()
 
     def showMinerStatus(self):
         miner = account.miner
         miner_stats = f"name: {'stoicminer0'}\n" \
+                      f"24hnumreward: {self.hnumreward24}\n" \
+                      f"24hreward: {self.hreward24}\n" \
                       f"offline: {miner['offline']}\n" \
                       f"Last Beat: {miner['lastBeat']}\n" \
                       f"Current Hash Rate: {miner['hr']}\n" \
                       f"Average Hash Rate: {miner['hr2']}"
         print(miner_stats)
 
-    def fetchJsonData(self):
+    def fetchStats(self):
         baseUrl = "https://rvn.2miners.com/api/accounts/"
         url = baseUrl + self.accoundId
         response = requests.get(url)
