@@ -6,13 +6,14 @@ import smtplib
 
 
 class Accouont:
-    def __init__(self, jsoon_data):
-        self.json_data = jsoon_data
-        self.hnumreward24 = jsoon_data['24hnumreward']
-        self.hreward24 = json_data['24hreward']
-        self.workers = jsoon_data['workers']
-        self.worker_keys = self.workers.keys()
-        self.miner = self.workers['stoicminer0']
+    def __init__(self, accoundId):
+        self.accoundId = accoundId
+        self.hnumreward24 = None
+        self.hreward24 = None
+        self.workers = None
+        self.worker_keys = None
+        self.miner = None
+        self.fetchJsonData()
 
     def showMinerStatus(self):
         miner = account.miner
@@ -21,20 +22,21 @@ class Accouont:
                       f"Last Beat: {miner['lastBeat']}\n" \
                       f"Current Hash Rate: {miner['hr']}\n" \
                       f"Average Hash Rate: {miner['hr2']}"
-
         print(miner_stats)
 
-baseUrl = "https://rvn.2miners.com/api/accounts/"
-accountId = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
-url = baseUrl + accountId
-
-def fetch2MinersJsonData(accouont):
-    response = requests.get(url)
-    if response.status_code != 200:
-        print("error with response. ")
-    json_data = response.json()
-    return json_data
-
+    def fetchJsonData(self):
+        baseUrl = "https://rvn.2miners.com/api/accounts/"
+        url = baseUrl + self.accoundId
+        response = requests.get(url)
+        if response.status_code != 200:
+            print("error with response. ")
+        else:
+            json_data = response.json()
+            self.hnumreward24 = json_data['24hnumreward']
+            self.hreward24 = json_data['24hreward']
+            self.workers = json_data['workers']
+            self.worker_keys = self.workers.keys()
+            self.miner = self.workers['stoicminer0']
 
 def sendEmail():
     try:
@@ -45,6 +47,6 @@ def sendEmail():
         print('error with email. ')
 
 if __name__ == '__main__':
-    json_data = fetch2MinersJsonData(accouont=accountId)
-    account = Accouont(jsoon_data=json_data)
+    accountId = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
+    account = Accouont(accoundId=accountId)
     account.showMinerStatus()
