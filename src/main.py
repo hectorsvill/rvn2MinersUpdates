@@ -6,8 +6,8 @@ import smtplib
 
 
 class Account:
-    def __init__(self, accoundId):
-        self.account_id = accoundId
+    def __init__(self, account_id):
+        self.account_id = account_id
         self.hnumreward24 = None
         self.hreward24 = None
         self.workers = None
@@ -51,6 +51,6 @@ def send_email():
 
 
 if __name__ == '__main__':
-    accountId = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
-    account = Account(accoundId=accountId)
+    account_id = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
+    account = Account(account_id)
     account.show_miner_status()
