@@ -4,12 +4,11 @@
 import requests
 import smtplib
 
-
 class Account:
     def __init__(self, address):
         self.id = address
-        self.hnumreward24 = None
-        self.hreward24 = None
+        self.numreward24h = None
+        self.reward24h = None
         self.workers = None
         self.worker_keys = None
         self.miner = None
@@ -18,8 +17,8 @@ class Account:
     def show_miner_status(self):
         miner = account.miner
         miner_stats = f"name: {'stoicminer0'}\n" \
-                      f"24hnumreward: {self.hnumreward24}\n" \
-                      f"24hreward: {self.hreward24}\n" \
+                      f"24hnumreward: {self.numreward24h}\n" \
+                      f"24hreward: {self.reward24h}\n" \
                       f"offline: {miner['offline']}\n" \
                       f"Last Beat: {miner['lastBeat']}\n" \
                       f"Current Hash Rate: {miner['hr']}\n" \
@@ -34,8 +33,8 @@ class Account:
             print("error with response. ")
         else:
             json_data = response.json()
-            self.hnumreward24 = json_data['24hnumreward']
-            self.hreward24 = json_data['24hreward']
+            self.numreward24h = json_data['24hnumreward']
+            self.reward24h = json_data['24hreward']
             self.workers = json_data['workers']
             self.worker_keys = self.workers.keys()
             self.miner = self.workers['stoicminer0']
