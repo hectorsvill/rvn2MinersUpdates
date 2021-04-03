@@ -1,8 +1,32 @@
 # main.py
 # by: @hectorsvill
 
-import requests
 import smtplib
+import requests
+
+
+class MailService:
+    def __init__(self, gmail_user, gmail_password):
+        self.gmail_user = gmail_user
+        self.gmail_password = gmail_password
+
+    def send_email(self, mail_to, subject_text, body_text):
+        email_text = f"""\
+        To: {mail_to}
+        Subject: {subject_text}
+
+        {body_text}
+        """
+
+        try:
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.ehlo()
+            server.login(self.gmail_user, self.gmail_password)
+            server.sendmail(self.gmail_user, mail_to, email_text)
+            server.close()
+        except:
+            print('error with email.')
+
 
 class Account:
     def __init__(self, address):
@@ -13,6 +37,8 @@ class Account:
         self.worker_keys = None
         self.miner = None
         self.fetch_stats()
+
+        self.mail_service = None
 
     def show_miner_status(self):
         miner = account.miner
@@ -39,26 +65,14 @@ class Account:
             self.worker_keys = self.workers.keys()
             self.miner = self.workers['stoicminer0']
 
-    def send_email(self, gmail_user, gmail_password, mail_to):
-        subject_text = "Raven 2Miner Update - 1 Online"
-        body_text = self.show_miner_status()
+    def send_email(self, mail_to):
+        if self.mail_service is None:
+            print("Mail Service is None")
+        else:
+            subject_text = "rvn 2Miners Update"
+            body_text = self.show_miner_status()
+            self.mail_service.send_email(mail_to, subject_text, body_text)
 
-        email_text = f"""\
-        From: {gmail_user}
-        To: {mail_to}
-        Subject: {subject_text}
-
-        {body_text}
-        """
-
-        try:
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.ehlo()
-            server.login(gmail_user, gmail_password)
-            server.sendmail(gmail_user, mail_to, email_text)
-            server.close()
-        except:
-            print('error with email.')
 
 
 if __name__ == '__main__':
@@ -67,4 +81,6 @@ if __name__ == '__main__':
     my_gmail_user = ""
     my_gmail_password = ""
     send_mail_to = ""
-    account.send_email(my_gmail_user, my_gmail_password, send_mail_to)
+
+    account.mail_service = MailService(my_gmail_user, my_gmail_password)
+    account.send_email(send_mail_to)
