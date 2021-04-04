@@ -3,29 +3,34 @@
 
 import smtplib
 import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 class MailService:
     def __init__(self, gmail_user, gmail_password):
         self.gmail_user = gmail_user
         self.gmail_password = gmail_password
+        self.mail_to = None
 
-    def send_email(self, mail_to, subject_text, body_text):
-        email_text = f"""\
-        To: {mail_to}
-        Subject: {subject_text}
+    def send_email(self, subject_text, body_text):
+        if self.mail_to is None:
+            print("MailService error: mail_to is None")
+        else:
+            email_text = f"""\
+            To: {self.mail_to}
+            Subject: {subject_text}
+    
+            {body_text}
+            """
 
-        {body_text}
-        """
-
-        try:
-            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.ehlo()
-            server.login(self.gmail_user, self.gmail_password)
-            server.sendmail(self.gmail_user, mail_to, email_text)
-            server.close()
-        except:
-            print('error with email.')
+            try:
+                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.ehlo()
+                server.login(self.gmail_user, self.gmail_password)
+                server.sendmail(self.gmail_user, self.mail_to, email_text)
+                server.close()
+            except:
+                print('error with email.')
 
 
 class Account:
@@ -37,8 +42,9 @@ class Account:
         self.worker_keys = None
         self.miner = None
         self.fetch_stats()
-
         self.mail_service = None
+        self.scheduler = None
+
 
     def show_miner_status(self):
         miner = account.miner
@@ -65,22 +71,29 @@ class Account:
             self.worker_keys = self.workers.keys()
             self.miner = self.workers['stoicminer0']
 
-    def send_email(self, mail_to):
+    def send_email(self):
         if self.mail_service is None:
             print("Mail Service is None")
         else:
             subject_text = "rvn 2Miners Update"
             body_text = self.show_miner_status()
-            self.mail_service.send_email(mail_to, subject_text, body_text)
+            self.mail_service.send_email(subject_text, body_text)
+            print(f"email sent: {self.mail_service.mail_to}")
 
+    def schedule_updates(self, number_seconds):
+        self.scheduler = BlockingScheduler()
+        self.scheduler.add_job(self.send_email, 'interval', seconds=number_seconds)
+        self.scheduler.start()
 
 
 if __name__ == '__main__':
     rvn_address = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
     account = Account(rvn_address)
+
     my_gmail_user = ""
     my_gmail_password = ""
-    send_mail_to = ""
 
     account.mail_service = MailService(my_gmail_user, my_gmail_password)
-    account.send_email(send_mail_to)
+    account.mail_service.mail_to = ""
+
+    account.schedule_updates(60)
