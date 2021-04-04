@@ -4,6 +4,9 @@
 import smtplib
 import requests
 from apscheduler.schedulers.blocking import BlockingScheduler
+from twilio.rest import Client
+import os
+
 
 
 class MailService:
@@ -33,6 +36,24 @@ class MailService:
                 print('error with email.')
 
 
+class TwillioService:
+    def __init__(self, account_sid, auth_token, from_number):
+        self.account_sid = account_sid
+        self.auth_token = auth_token
+        self.from_number = from_number
+        self.to_number = None
+
+    def send_sms(self, body_text):
+        client = Client(self.account_sid, self.auth_token)
+        message = client.messages \
+            .create(
+                body=body_text,
+                from_=self.from_number,
+                to=self.to_number
+            )
+        print(message.sid)
+
+
 class Account:
     def __init__(self, address):
         self.id = address
@@ -44,6 +65,7 @@ class Account:
         self.fetch_stats()
         self.mail_service = None
         self.scheduler = None
+        self.twillio_service = None
 
 
     def show_miner_status(self):
@@ -80,20 +102,33 @@ class Account:
             self.mail_service.send_email(subject_text, body_text)
             print(f"email sent: {self.mail_service.mail_to}")
 
-    def schedule_updates(self, number_seconds):
+    def schedule_email_updates(self, number_seconds):
         self.scheduler = BlockingScheduler()
         self.scheduler.add_job(self.send_email, 'interval', seconds=number_seconds)
         self.scheduler.start()
+
+    def send_sms(self):
+        account.twillio_service.send_sms(account.show_miner_status(), "+16262441779")
+
+    def schedule_sms_updates(self,number_seconds):
+        if self.twillio_service is None:
+            print("error: twillio_service is None")
+        else:
+            self.scheduler = BlockingScheduler()
+            self.scheduler.add_job(self.send_sms, 'interval', seconds=number_seconds)
+            self.scheduler.start()
 
 
 if __name__ == '__main__':
     rvn_address = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
     account = Account(rvn_address)
+    # send email
+    # my_gmail_user = ""
+    # my_gmail_password = ""
+    # account.mail_service = MailService(my_gmail_user, my_gmail_password)
+    # account.mail_service.mail_to = ""
+    # account.schedule_email_updates(60)
 
-    my_gmail_user = ""
-    my_gmail_password = ""
-
-    account.mail_service = MailService(my_gmail_user, my_gmail_password)
-    account.mail_service.mail_to = ""
-
-    account.schedule_updates(60)
+    account.twillio_service = TwillioService(account_sid="", auth_token="", from_number="")
+    account.twillio_service.to_number = ""
+    # account.schedule_sms_updates(10)
