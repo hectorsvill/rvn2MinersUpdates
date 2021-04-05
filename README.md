@@ -22,7 +22,7 @@ pip3 install twilio
 
 ```python3
 if __name__ == '__main__':
-    rvn_address = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
+    rvn_address = ""
     account = Account(rvn_address)
     account.twillio_service = TwillioService(account_sid="", auth_token="", from_number="")
     account.twillio_service.to_number = ""
