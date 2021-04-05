@@ -5,7 +5,6 @@ import smtplib
 import requests
 from apscheduler.schedulers.blocking import BlockingScheduler
 from twilio.rest import Client
-import os
 
 
 class MailService:
@@ -43,6 +42,8 @@ class TwillioService:
         self.to_number = None
 
     def send_sms(self, body_text):
+        if self.to_number[0] != "1":
+            print("send_sms error: to_number must start with +")
         client = Client(self.account_sid, self.auth_token)
         message = client.messages \
             .create(
@@ -126,16 +127,17 @@ class Account:
 
 
 if __name__ == '__main__':
-    rvn_address = "RFDLFJhd7W1h4AUTxsQu7XY7DQHALvPmJu"
+    rvn_address = ""
     account = Account(rvn_address)
-    print(account.workers_stats()[0])
-    # send email
+
+    # send email updates
     # my_gmail_user = ""
     # my_gmail_password = ""
     # account.mail_service = MailService(my_gmail_user, my_gmail_password)
     # account.mail_service.mail_to = ""
     # account.schedule_email_updates(60)
 
-    account.twillio_service = TwillioService(account_sid="", auth_token="", from_number="")
-    account.twillio_service.to_number = ""
+    # send sms updates
+    # account.twillio_service = TwillioService(account_sid="", auth_token="", from_number="")
+    # account.twillio_service.to_number = ""
     # account.schedule_sms_updates(10)
