@@ -18,6 +18,7 @@ pip3 install twilio
  - Set rvn address you want to track on 2Miners.
  - Create an account with twillio and enable sms.
  - Setup TwillioSerivice with your account sid, auth token and the number provided.
+ - Set account.twillio_service.to_number - The number you want to send updates to. 
  - Call schedule_sms_updates and set a second interval
 
 ```python3
