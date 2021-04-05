@@ -44,9 +44,9 @@ if __name__ == '__main__':
     rvn_address = ""
     account = Account(rvn_address)
     # Send email Updates
-    # my_gmail_user = ""
-    # my_gmail_password = ""
-    # account.mail_service = MailService(my_gmail_user, my_gmail_password)
-    # account.mail_service.mail_to = ""
-    # account.schedule_email_updates(60)
+    my_gmail_user = ""
+    my_gmail_password = ""
+    account.mail_service = MailService(my_gmail_user, my_gmail_password)
+    account.mail_service.mail_to = ""
+    account.schedule_email_updates(60)
 ```
